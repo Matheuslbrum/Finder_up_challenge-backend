@@ -1,9 +1,9 @@
 const knex = require('../db');
 
 module.exports = {
-  async consult(req, res, next) {
+  async consultMaterials(req, res, next) {
     try {
-      const { name: nameQuery, userQuery } = req.query;
+      const { name: nameQuery, user: userQuery } = req.query;
 
       if (nameQuery) {
         const materials = await knex('raw_materials').whereILike('name', `%${nameQuery}%`);
@@ -24,7 +24,7 @@ module.exports = {
         return res.status(400).json({ error: 'Não têm usuário com esse nome' });
       }
 
-      return res.json({ userQuery });
+      return res.json({ updatedMaterials });
     } catch (error) {
       return next(error);
     }

@@ -4,7 +4,7 @@ const routes = express.Router();
 
 const materialsController = require('./src/users/index');
 
-routes.get('/rawMaterials', materialsController.consult);
+routes.get('/rawMaterials', materialsController.consultMaterials);
 routes.post('/rawMaterials', materialsController.insert);
 routes.put('/rawMaterials/:id/request', materialsController.remove);
 
