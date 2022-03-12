@@ -5,6 +5,10 @@ module.exports = {
     try {
       const { name: nameQuery, user: userQuery } = req.query;
 
+      if (!nameQuery && !userQuery) {
+        return res.status(400).json({ error: 'Você não pesquisou nada, idiota' });
+      }
+
       if (nameQuery) {
         const materials = await knex('raw_materials').whereILike('name', `%${nameQuery}%`);
 
@@ -14,17 +18,19 @@ module.exports = {
           return res.status(400).json({ error: 'Não têm objeto com esse nome' });
         }
 
-        return res.json({ ...materials });
+        return res.json({ materials });
       }
-      const updatedMaterials = await knex('raw_materials_expense').whereILike('user', `%${userQuery}%`);
+      if (userQuery) {
+        const updatedMaterials = await knex('raw_materials_expense').whereILike('user', `%${userQuery}%`);
 
-      const updatedMaterialsExist = await knex('raw_materials_expense').whereILike('user', `%${userQuery}%`).first();
+        const updatedMaterialsExist = await knex('raw_materials_expense').whereILike('user', `%${userQuery}%`).first();
 
-      if (!updatedMaterialsExist) {
-        return res.status(400).json({ error: 'Não têm usuário com esse nome' });
+        if (!updatedMaterialsExist) {
+          return res.status(400).json({ error: 'Não têm usuário com esse nome' });
+        }
+
+        return res.json({ updatedMaterials });
       }
-
-      return res.json({ updatedMaterials });
     } catch (error) {
       return next(error);
     }
