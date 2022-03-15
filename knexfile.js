@@ -16,4 +16,12 @@ module.exports = {
       directory: `${__dirname}/src/db/migration`,
     },
   },
+
+  onUpdateTrigger: (table) => `
+  CREATE TRIGGER ${table}_updated
+  AFTER UPDATE ON ${table}
+  FOR EACH ROW
+  EXECUTE PROCEDURE on_update_material();
+  `,
+
 };
