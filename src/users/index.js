@@ -18,7 +18,7 @@ module.exports = {
           username,
         });
 
-        return res.status(201).send();
+        return res.status(201).send('User registrado');
       }
       return res.status(400).send({ error: 'Tá faltando alguma coisa' });
     } catch (error) {
@@ -47,6 +47,7 @@ module.exports = {
         email,
         profession,
         username,
+        status: 'Você está logado',
       });
     } catch (error) {
       return next(error);

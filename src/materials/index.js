@@ -6,11 +6,11 @@ module.exports = {
       const { name: nameQuery, user: userQuery } = req.query;
 
       if (!nameQuery && !userQuery) {
-        return res.status(400).send({ error: 'Você não pesquisou nada, idiota' });
+        return res.status(400).send({ error: 'Você não pesquisou nada' });
       }
 
       if (nameQuery) {
-        const materials = await knex('raw_materials').whereILike('name', `%${nameQuery}%`);
+        const materials = await knex('raw_materials').whereILike('name', `%${nameQuery}%`).where('quantity', '>', '0');
 
         const materialsExist = await knex('raw_materials').whereILike('name', `%${nameQuery}%`).first();
 
@@ -65,17 +65,15 @@ module.exports = {
 
       const { quantity, user } = req.body;
 
-      console.log(id, quantity, user);
-
       const quantityValue = await knex('raw_materials').select('quantity').where({ id });
       const [{ current_withdrawn: currentWithdrawn }] = await knex('raw_materials').select('current_withdrawn').where({ id });
 
       if (quantityValue === 0) {
-        return res.status(204).send({ error: 'Não tem mais desse material no estoque' });
+        return res.status(404).send({ error: 'Não tem mais desse material no estoque' });
       }
 
       if (quantity < 0) {
-        return res.status(204).send({ error: 'Você não pode adicionar item' });
+        return res.status(403).send({ error: 'Você não pode adicionar item' });
       }
 
       await knex('raw_materials')
@@ -93,7 +91,7 @@ module.exports = {
         .where('quantity', '<', '0')
         .update({ quantity: 0 });
 
-      return res.status(201).send();
+      return res.status(204).send({ sucess: 'Você editou o produto' });
     } catch (error) {
       return next(error);
     }
